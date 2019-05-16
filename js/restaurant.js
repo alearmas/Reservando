@@ -36,4 +36,3 @@ Restaurant.prototype.obtenerPuntuacion = function() {
     }
 
 }
-
