@@ -91,3 +91,59 @@ describe('Testing de la función obtenerRestaurante()', function () {
         expect(restFiltrado[0].nombre).to.eql("Jolly");
     })
 })
+
+//Testing de la guia 3, sobre la nueva funcionalidad de reserva en la pagina.
+
+describe('Testeo del precio base y precio final', function() {
+    beforeEach(function() {
+      var reserva1 = new Reserva (new Date(2018, 7, 24, 11, 00), 8, 350, "DES1");
+      var reserva2 = new Reserva (new Date(2018, 7, 27, 14, 30), 6, 550, "DES200");
+      var reserva3 = new Reserva (new Date(2019, 1, 28, 12, 30), 7, 400, 'DES15');
+      var reserva4 = new Reserva (new Date(2019, 10, 17, 21, 00), 2, 300, '');
+    })
+    it('Verificacion de adicionales por dia', function() {
+      expect(reserva1.adicionalesPorDia()).to.be.equal(calcularPorcentaje(10, reserva1.precioBase));
+      expect(reserva2.adicionalesPorDia()).to.be.equal(0);
+      expect(reserva3.adicionalesPorDia()).to.be.equal(0);
+      expect(reserva4.adicionalesPorDia()).to.be.equal(calcularPorcentaje(10, reserva4.precioBase));
+    })
+    it('Verificacion de adicionales por horario', function() {
+      expect(reserva1.adicionalesPorHorario()).to.be.equal(0);
+      expect(reserva2.adicionalesPorHorario()).to.be.equal(0);
+      expect(reserva3.adicionalesPorHorario()).to.be.equal(0);
+      expect(reserva4.adicionalesPorHorario()).to.be.equal(60);
+    })
+    it('Verificacion de descuentos por código', function() {
+      expect(reserva1.descuentosPorCodigo()).to.be.equal(reserva1.precioPersona);
+      expect(reserva2.descuentosPorCodigo()).to.be.equal(400);
+      expect(reserva3.descuentosPorCodigo()).to.be.equal(calcularPorcentaje(15, reserva3.precioBase));
+      expect(reserva4.descuentosPorCodigo()).to.be.equal(0);
+    })
+    it('Verificacion de descuentos por grupo', function() {
+      expect(reserva1.descuentosPorGrupo()).to.be.equal(calcularPorcentaje(10, reserva1.precioBase));
+      expect(reserva2.descuentosPorGrupo()).to.be.equal(0);
+      expect(reserva3.descuentosPorGrupo()).to.be.equal(calcularPorcentaje(15, reserva3.precioBase));
+      expect(reserva4. descuentosPorGrupo()).to.be.equal(calcularPorcentaje(5, reserva4.precioBase));
+    })
+    it('Testing de precio base', function() {
+      expect(reserva1.precioBase).to.be.equal(2400);
+      expect(reserva2.precioBase).to.be.equal(300);
+      expect(reserva3.precioBase).to.be.equal(500 * 9);
+      expect(reserva4.precioBase).to.be.equal(300 * 4);
+    })
+    it('Testing de precio final', function() {
+      var reserva3Adicional = 0;
+      var reserva3Desc = calcularPorcentaje(15, reserva3.precioBase) + calcularPorcentaje(15, reserva3.precioBase);
+      var precioFinal3 = (500 * 9) + reserva3Adicional - reserva3Desc;
+  
+      var reserva4Adicional = calcularPorcentaje(10, reserva4.precioBase) + 60;
+      var reserva4Desc = calcularPorcentaje(5, reserva4.precioBase);
+      var precioFinal4 = (300 * 4) + reserva4Adicional - reserva4Desc;
+  
+      expect(reserva1.precioFinal()).to.be.equal(2450);
+  
+      expect(reserva2.precioFinal()).to.be.equal(100);
+      expect(reserva3.precioFinal()).to.be.equal(precioFinal3);
+      expect(reserva4.precioFinal()).to.be.equal(precioFinal4);
+    })
+  })
